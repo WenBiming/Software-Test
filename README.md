@@ -44,7 +44,7 @@ python3 case1.py
 ├── case1.py /示例case文件  
 ├── libs  
 │   └── untils  
-│       └── functions.py /方法文件  
+│           └── functions.py /方法文件  
 ├── README.md  
 ├── result /存放最终扫描结果  
 ├── log /存放log日志  
@@ -57,5 +57,9 @@ python3 case1.py
 ## 版本更新
 
 ### v0.1
+优化部分方法  
+修改方法名称  
+增加入参校验及方法执行返回值  
+部分会出问题的方法暂时设为私有方法
 
 
