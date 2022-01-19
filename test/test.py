@@ -1,7 +1,7 @@
 from libs.untils.functions import *
-from libs.config import SCREENSHOT_DIR
+
 if __name__ == '__main__':
-    # res = start_app('xdotool exec kylin-scanner')
+    res = start_app('xdotool exec kylin-scanner')
     # res = close_app('wechat')
     # res = restart_app('xdotool exec wechat')
     # res = get_window_id_with_window_name('扫描')
@@ -39,9 +39,7 @@ if __name__ == '__main__':
     # res2 = get_coordinate_by_image('美化', '/home/wangpengfei/桌面/111111.png',fuzzy=True)
     # res3 = get_coordinate_by_image('扫描', '/home/wangpengfei/桌面/111111.png')
     # res2 = click_location(182452239, 100, 100)
-    # print(res)
-    final_file_path = screenshot_window('最终检查结果.png', SCREENSHOT_DIR)
-    print(final_file_path)
+    print(res)
     # print(res2)
 
 
