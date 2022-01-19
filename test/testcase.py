@@ -1,7 +1,11 @@
+import sys
+# 控制台调用方法时需将项目根目录添加到环境变量
+sys.path.append('../')
 from libs.untils.functions import *
 import time
-import sys
 import shutil
+
+
 def res_check(result,pass_print,fail_print):
     """
     断言方法 判断result是否为True
@@ -19,13 +23,14 @@ def res_check(result,pass_print,fail_print):
         print(fail_print)
         sys.exit()
 
+
 if __name__ == '__main__':
     #----------------------------------------------------初始化参数------------------------------------------------------
+    # 项目根目录绝对路径
+    pwd_path = os.path.abspath(os.path.dirname(__file__))
+    root_path = os.path.dirname(pwd_path)
     # 截图文件夹路径
-    root_path = os.path.abspath(os.path.dirname(__file__)).split('test')[0]
-    screenshot_dir = f'{root_path}screenshot'
-    # 绝对路径
-    abs_path = os.getcwd()
+    screenshot_dir = f'{root_path}/screenshot'
     # 时间戳
     times = str(int(time.time()))
     # 字典(名称:选项)
@@ -142,9 +147,10 @@ if __name__ == '__main__':
     final_path = check_exist('/home', final_res_dict, fuzzy=True)
     result_format = scanner_dict['格式']
     if final_path:
-        result_path = final_path+'/'+result_name+'.'+result_format
-        dst_path = f'{root_path}result/'
+        result_file_name = f'{result_name}.{result_format}'
+        result_path = f'{final_path}/{result_file_name}'
+        dst_path = f'{root_path}/result/'
         # 结果保存到result文件夹下
         shutil.move(result_path, dst_path)
-        print(f'最终结果保存在{dst_path}')
+        print(f'最终结果保存在{dst_path}{result_file_name}')
 
