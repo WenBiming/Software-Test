@@ -65,3 +65,4 @@ sudo apt-get install python3-tk python3-dev
 部分会出问题的方法暂时设为私有方法
 
 
+
