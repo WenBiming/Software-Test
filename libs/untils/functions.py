@@ -19,7 +19,7 @@ import pyautogui
 from libs.config import OCR_URL
 
 #--------------------------------------------------------应用方法--------------------------------------------------------------
-def start_app(exec_commend) ->bool:
+def start_app(exec_command) ->bool:
     """
     启动应用方法
     Parameters:
@@ -29,13 +29,13 @@ def start_app(exec_commend) ->bool:
         False:启动失败
     """
     # 判断是否为字符串
-    if not isinstance(exec_commend,str):
+    if not isinstance(exec_command,str):
         print('启动命令输入错误,启动命令应为字符串类型！')
         return False
     # 执行启动命令
-    start_res = os.system(exec_commend)
+    start_res = os.system(exec_command)
     # 查进程
-    res = os.system(f'ps -ef|grep {exec_commend.split()[-1]}|grep -v grep')
+    res = os.system(f'ps -ef|grep {exec_command.split()[-1]}|grep -v grep')
     # 判断是否启动成功
     if res == 0 and start_res == 0:
         print('-----------------应用启动成功--------------------')
@@ -70,7 +70,7 @@ def close_app(app_name) ->bool:
         print('-----------------应用关闭成功--------------------')
         return True
 
-def restart_app(exec_commend) -> bool:
+def restart_app(exec_command) -> bool:
     """
     重启应用方法
     Parameters:
@@ -80,22 +80,22 @@ def restart_app(exec_commend) -> bool:
         False：重启失败
     """
     # 判断是否为字符串
-    if not isinstance(exec_commend, str):
+    if not isinstance(exec_command, str):
         print('启动命令输入错误,启动命令应为字符串类型！')
         return False
     # 查杀进程
-    os.system(f"ps -ef|grep {exec_commend.split()[-1]}|grep -v grep|awk " + "'{print \"kill -9 \"$2}'" + "|sh")
+    os.system(f"ps -ef|grep {exec_command.split()[-1]}|grep -v grep|awk " + "'{print \"kill -9 \"$2}'" + "|sh")
     # 查看查杀结果
-    res1 = os.system(f'ps -ef|grep {exec_commend.split()[-1]}|grep -v grep')
+    res1 = os.system(f'ps -ef|grep {exec_command.split()[-1]}|grep -v grep')
     # 查杀结果判断
     if res1 == 0:
         print('-----------------应用关闭失败--------------------')
         return False
     else:
         # 启动应用
-        os.system(exec_commend)
+        os.system(exec_command)
         # 査进程
-        res2 = os.system(f'ps -ef|grep {exec_commend.split()[-1]}|grep -v grep')
+        res2 = os.system(f'ps -ef|grep {exec_command.split()[-1]}|grep -v grep')
         # 判断启动结果
         if res2 == 0:
             print('-----------------应用重启成功--------------------')
@@ -123,6 +123,7 @@ def _get_window_id_with_pid(pid) ->str:
             return  ''
         return res_ID
     else:
+        print(f'{pid}输入错误,pid应为数字！')
         return ''
 
 
@@ -150,7 +151,7 @@ def get_window_id_with_window_name(window_name) ->str:
     return res_ID
 
 
-def _get_window_id_with_start_command(start_command) ->str:
+def _get_window_id_with_start_command(exec_command) ->str:
     """
     根据启动命令获取窗口ID(一个进程ID对应多个窗口ID时可能导致结果不准确)
     Parameters:
@@ -158,9 +159,9 @@ def _get_window_id_with_start_command(start_command) ->str:
     Returns:
         str:窗口ID
     """
-    pid = os.popen(f"ps -ef | grep {start_command.split()[-1]}"+"| grep -v grep | awk '{ print $2 }'").readline()[:-1:]
+    pid = os.popen(f"ps -ef | grep {exec_command.split()[-1]}"+"| grep -v grep | awk '{ print $2 }'").readline()[:-1:]
     if pid =='':
-        print('没有找到正在运行的程序',start_command)
+        print('没有找到正在运行的程序',exec_command)
         return ''
     res = os.popen(f'xdotool search --pid {pid}')
     return res.read()[:-1:]
@@ -246,21 +247,19 @@ def get_window_size(window_id) ->list:
     window_id_str = str(window_id)
     # 判断是否为数字
     if window_id_str.isdigit():
-        # 获取宽度
-        window_width = os.popen(
-            f"xdotool getwindowgeometry {window_id} | grep Geometry | sed -r \"s/[^0-9]*([0-9]+)x([0-9]+)/\\1/g\"").readline()[:-1:]
+        # 获取尺寸字符串
+        window_size = os.popen(
+            f"xdotool getwindowgeometry {window_id} | grep Geometry").readline()[:-1:]
         # 结果判断
-        if window_width=='':
+        if window_size=='':
             print('没有找到对应的窗口ID')
             return []
-        # 获取高度
-        window_height = os.popen(
-            f"xdotool getwindowgeometry {window_id} | grep Geometry | sed -r \"s/[^0-9]*([0-9]+)x([0-9]+)/\\2/g\"").readline()[:-1:]
-        # 结果判断
-        if window_height == '':
-            print('没有找到对应的窗口ID')
+        window_size = window_size.split(' ')[-1].split('x')
+        if len(window_size) == 2 and window_size[0].isdigit() and window_size[1].isdigit():
+            return window_size
+        else:
+            print('方法返回格式错误')
             return []
-        return [window_width, window_height]
     else:
         print(window_id, '输入错误，window_id应为数字')
         return []
@@ -306,20 +305,20 @@ def move_window(window_id, width, height):
     if not str(window_id).isdigit():
         print(window_id, '输入错误，window_id应为数字')
         return False
-    elif not str(width).isdigit():
+    if not str(width).isdigit():
         print(width, '输入错误，width应为数字')
         return False
-    elif not str(height).isdigit():
+    if not str(height).isdigit():
         print(height, '输入错误，height应为数字')
         return False
+
+    res = os.system(f"xdotool windowmove {window_id} {width} {height}")
+    if res == 0:
+        print(f'{window_id}窗口移动成功')
+        return True
     else:
-        res = os.system(f"xdotool windowmove {window_id} {width} {height}")
-        if res == 0:
-            print(f'{window_id}窗口移动成功')
-            return True
-        else:
-            print(f'{window_id}窗口移动失败')
-            return False
+        print(f'{window_id}窗口移动失败')
+        return False
 
 
 def minimize_window(window_id):
@@ -365,7 +364,7 @@ def _set_window_size(window_id, width, height):
         os.system(f"xdotool windowsize {window_id} {width} {height}")
 
 
-# def switchWindow(window_id):
+# def switch_window(window_id):
 #     """
 #     切换到指定窗口
 #     Parameters:

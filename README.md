@@ -52,7 +52,9 @@ python3 case1.py
 
 
 ## 常见问题
-
+1.在arm架构下验证，第一次运行需额外安装python3-tk python3-dev  
+安装命令  
+sudo apt-get install python3-tk python3-dev
 
 ## 版本更新
 
