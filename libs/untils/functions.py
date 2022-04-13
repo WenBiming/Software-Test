@@ -16,7 +16,7 @@ import requests
 import sys
 import json
 import pyautogui
-from libs.config import OCR_URL
+from libs.config import OCR_URL, ACCESS_ID, ACCESS_SECRET
 
 #--------------------------------------------------------应用方法--------------------------------------------------------------
 def start_app(exec_command) ->bool:
@@ -797,9 +797,9 @@ def get_all_coordinates(image_path) ->dict:
         return {}
     file = open(image_path, 'rb')
     files = {'file': file}
-    r = requests.post(url=OCR_URL, files=files)
+    r = requests.post(url=OCR_URL, files=files, data={'access_id': ACCESS_ID, 'access_secret': ACCESS_SECRET})
     res = r.json()
-    return res['main']
+    return res['result']['main']
 
 
 def get_coordinate(string, coordinate_dict, fuzzy=False):
